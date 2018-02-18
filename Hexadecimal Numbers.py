@@ -74,7 +74,7 @@ def t_ID(token):
     token.type = 'ID'
     return token
 
-def t_NUM(token):
+def t_NUM_hex(token):
     r'0x[0-9a-f]+'
     token.value = int(token.value, 16)
     token.type = 'NUM'
@@ -91,7 +91,7 @@ t_ignore = ' \t\v\r'
 
 def t_error(t):
   print "Lexer: unexpected character " + t.value[0]
-  t.lexer.skip(1) 
+  t.lexer.skip(1)
 
 # We have included some testing code to help you check your work. You will
 # probably want to add your own additional tests. 
@@ -103,7 +103,7 @@ def test_lexer(input_string):
   while True:
     token = lexer.token()
     if not token: break
-    result = result + [(tok.type, tok.value)]
+    result = result + [(token.type, token.value)]
   return result
 
 question1 = "0x19 equals 25" # 0x19 = (1*16) + 9
