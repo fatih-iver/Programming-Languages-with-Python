@@ -48,32 +48,91 @@
 # new_accepting will be just like accepting, but including only those live
 # states. 
 
-def nfsmtrim(edges, accepting): 
+def nfsmtrim(edges, accepting):
     # Write your code here.
-        
+    new_accepting = getLiveStates(edges, accepting)
+    new_edges = getLiveEdges(edges, new_accepting)
+    return new_edges, new_accepting
     
+def getLiveStates(edges, accepting):
+    
+    new_accepting = []
+    states_list = edges.values()
+    
+    for states in states_list:
+        for state in states:
+            if nfsmaccepts(state, edges, accepting):
+                if state in accepting and not (state in new_accepting):
+                    new_accepting.append(state)
+    
+    return new_accepting
+    
+def getLiveEdges(edges, new_accepting):
+    
+    new_edges = {}
+    
+    for edge in edges:
+        for nextState in edges[edge]:
+            if nfsmaccept(edge, nextState, edges, new_accepting):
+                if edge in new_edges:
+                    new_edges[edge].append(nextState)
+                else:
+                    new_edges[edge] = [nextState]
+    return new_edges
+    
+def nfsmaccept(edge, nextState, edges, new_accepting):
+    if nextState in new_accepting:
+        return True
+    else:
+        for edge in edges:
+            if edge[0] == nextState:
+                for state in edges[edge]:
+                    if nextState != state:
+                        if nfsmaccept(edge, state, edges, new_accepting):
+                            return True
+        return False
 
-        
-
+def nfsmaccepts(state, edges, accepting):
+    if state in accepting:
+        return True
+    else:
+        for key in edges:
+            if key[0] == state:
+                for nextState in edges[key]:
+                    if nextState != state:
+                        if nfsmaccepts(nextState, edges, accepting):
+                            return True
+        return False
 
 # We have included a few test cases, but you will definitely want to make
 # your own. 
 
-edges1 = { (1,'a') : [1] , (1,'b') : [2] , (2,'b') : [3] , (3,'b') : [4] , (8,'z') : [9]} 
+edges1 = { (1,'a') : [1] ,
+           (1,'b') : [2] ,
+           (2,'b') : [3] ,
+           (3,'b') : [4] ,
+           (8,'z') : [9] , } 
+"""
 accepting1 = [ 1 ] 
-(new_edges1, new_accepting1) = nfsmtrim(edges1,accepting1) 
-print (new_edges1)
-print (new_edges1 == {(1, 'a'): [1]})
-print (new_accepting1 == [1]) 
+(new_edges1, new_accepting1) = nfsmtrim(edges1,accepting1)
+print new_edges1
+print new_edges1 == {(1, 'a'): [1]}
+print new_accepting1
+print new_accepting1 == [1] 
 
+print
 (new_edges2, new_accepting2) = nfsmtrim(edges1,[]) 
-print (new_edges2 == {})
-print (new_accepting2 == []) 
+print new_edges2 == {}
+print new_accepting2
+print new_accepting2 == [] 
 
+print
 (new_edges3, new_accepting3) = nfsmtrim(edges1,[3,6]) 
-print (new_edges3 == {(1, 'a'): [1], (1, 'b'): [2], (2, 'b'): [3]})
-print (new_accepting3 == [3])
+print new_edges3 == {(1, 'a'): [1], (1, 'b'): [2], (2, 'b'): [3]}
+print new_accepting3
+print new_accepting3 == [3]
 
+print
 edges4 = { (1,'a') : [1] ,
            (1,'b') : [2,5] ,
            (2,'b') : [3] ,
@@ -81,10 +140,12 @@ edges4 = { (1,'a') : [1] ,
            (3,'c') : [2,1,4] } 
 accepting4 = [ 2 ] 
 (new_edges4, new_accepting4) = nfsmtrim(edges4, accepting4) 
-print (new_edges4 == { 
+print new_edges4 == { 
   (1, 'a'): [1],
   (1, 'b'): [2], 
   (2, 'b'): [3], 
   (3, 'c'): [2, 1], 
-})
-print (new_accepting4 == [2])
+}
+print new_accepting4
+print new_accepting4 == [2]
+"""
