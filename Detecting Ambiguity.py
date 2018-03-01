@@ -60,8 +60,41 @@
 # can just keep enumerating new (utterance,derivation) pairs until you 
 # cannot find any that are not already enumerated. 
 
+def expand(tokens_and_derivation, grammar):
+    (tokens, derivation) =  tokens_and_derivation
+    
+    for token_pos in range(len(tokens)):
+        for rule_index in range(len(grammar)):
+            rule = grammar[rule_index]
+            
+            if tokens[token_pos] == rule[0]:
+                yield (( tokens[0:token_pos] + rule[1] + tokens[token_pos+1:]), derivation + [rule_index])
+
+
 def isambig(grammar, start, utterance): 
     # Write your code here!
+    
+    enumerated = [ ([start], []) ]
+    
+    while True:
+        new_enumerated = enumerated
+        
+        for u in enumerated:
+            for i in expand(u, grammar):
+                if not i in new_enumerated:
+                    new_enumerated = new_enumerated + [i]
+                    
+        
+        if new_enumerated != enumerated:
+            enumerated = new_enumerated
+        else:
+            break
+        
+    return len([x for x in enumerated if x[0] == utterance]) > 1
+    
+    
+
+
 
 # We have provided a few test cases. You will likely want to add your own.
 
